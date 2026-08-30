@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'productos_screen.dart';
+import 'favoritos_screen.dart';
+import 'nosotros_screen.dart';
 
 class InicioScreen extends StatelessWidget {
   const InicioScreen({super.key});
@@ -58,17 +60,44 @@ class InicioScreen extends StatelessWidget {
                   label: const Text('Ver nuestros productos'),
                 ),
               ),
+const SizedBox(height: 12),
 
-              const SizedBox(height: 12),
+SizedBox(
+  width: double.infinity,
+  child: OutlinedButton.icon(
+    onPressed: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const FavoritosScreen(),
+        ),
+      );
+    },
+    icon: const Icon(Icons.favorite),
+    label: const Text('Mis favoritos'),
+  ),
+),
 
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton.icon(
-                  onPressed: () {},
-                  icon: const Icon(Icons.info_outline),
-                  label: const Text('Conócenos'),
-                ),
-              ),
+const SizedBox(height: 12),
+
+SizedBox(
+  width: double.infinity,
+  child: OutlinedButton.icon(
+    onPressed: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const NosotrosScreen(),
+        ),
+      );
+    },
+    icon: const Icon(Icons.info_outline),
+    label: const Text('Conócenos'),
+  ),
+),
+              
+
+             
             ],
           ),
         ),

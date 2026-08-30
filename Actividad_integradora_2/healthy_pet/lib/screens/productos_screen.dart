@@ -8,9 +8,17 @@ class ProductosScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Nuestros productos'),
-      ),
+        appBar: AppBar(
+          title: const Text('Nuestros productos'),
+          actions: [
+            IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: const Icon(Icons.home),
+            ),
+          ],
+        ),
       body: Padding(
         padding: const EdgeInsets.all(8),
         child: GridView.builder(
