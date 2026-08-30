@@ -55,7 +55,9 @@ class NosotrosScreen extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
+
                     SizedBox(height: 10),
+
                     Text(
                       'Ofrecer snacks y productos saludables '
                       'elaborados con ingredientes de calidad '
@@ -81,7 +83,9 @@ class NosotrosScreen extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
+
                     SizedBox(height: 10),
+
                     Text(
                       'Convertirnos en una alternativa reconocida '
                       'por ofrecer productos saludables y naturales '
