@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'productos_screen.dart';
 
 class InicioScreen extends StatelessWidget {
   const InicioScreen({super.key});
@@ -45,7 +46,14 @@ class InicioScreen extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
-                  onPressed: () {},
+                  onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const ProductosScreen(),
+                                    ),
+                                  );
+                                },
                   icon: const Icon(Icons.pets),
                   label: const Text('Ver nuestros productos'),
                 ),
