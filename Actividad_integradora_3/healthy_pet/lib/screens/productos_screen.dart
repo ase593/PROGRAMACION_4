@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../providers/carrito_provider.dart';
 import '../providers/favoritos_provider.dart';
 import '../widgets/producto_card.dart';
 import '../widgets/titulo_seccion.dart';
+import 'carrito_screen.dart';
 import 'favoritos_screen.dart';
 
 class ProductosScreen extends StatelessWidget {
@@ -15,6 +17,52 @@ class ProductosScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Nuestros productos'),
         actions: [
+          Consumer<CarritoProvider>(
+            builder: (context, carrito, child) {
+              return Stack(
+                alignment: Alignment.center,
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              const CarritoScreen(),
+                        ),
+                      );
+                    },
+                    icon: const Icon(
+                      Icons.shopping_cart_outlined,
+                    ),
+                    tooltip: 'Mi carrito',
+                  ),
+                  if (carrito.cantidadTotal > 0)
+                    Positioned(
+                      right: 5,
+                      top: 5,
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .error,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Text(
+                          '${carrito.cantidadTotal}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              );
+            },
+          ),
           IconButton(
             onPressed: () {
               Navigator.push(
@@ -39,9 +87,7 @@ class ProductosScreen extends StatelessWidget {
               subtitulo:
                   'Snacks saludables para consentir a tu mascota',
             ),
-
             const SizedBox(height: 12),
-
             Expanded(
               child: Consumer<FavoritosProvider>(
                 builder: (context, proveedor, child) {
@@ -71,7 +117,8 @@ class ProductosScreen extends StatelessWidget {
                                     ? '${producto.nombre} agregado a favoritos'
                                     : '${producto.nombre} eliminado de favoritos',
                               ),
-                              duration: const Duration(seconds: 2),
+                              duration:
+                                  const Duration(seconds: 2),
                             ),
                           );
                         },

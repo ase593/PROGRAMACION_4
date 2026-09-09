@@ -1,14 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'providers/carrito_provider.dart';
 import 'providers/favoritos_provider.dart';
 import 'screens/principal_screen.dart';
 import 'theme/tema_app.dart';
 
 void main() {
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => FavoritosProvider(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => FavoritosProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => CarritoProvider(),
+        ),
+      ],
       child: const HealthyPetApp(),
     ),
   );
