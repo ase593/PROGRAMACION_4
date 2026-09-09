@@ -59,34 +59,57 @@ class ProductoCard extends StatelessWidget {
               ),
 
               const SizedBox(height: 8),
+Text(
+  producto.nombre,
+  maxLines: 1,
+  overflow: TextOverflow.ellipsis,
+  style: const TextStyle(
+    fontWeight: FontWeight.bold,
+    fontSize: 16,
+  ),
+),
 
-              Text(
-                producto.nombre,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
-              ),
+const SizedBox(height: 4),
 
-              const SizedBox(height: 4),
+Row(
+  children: [
+    const Icon(
+      Icons.category_outlined,
+      size: 16,
+    ),
+    const SizedBox(width: 4),
+    Text(producto.categoria),
+    const Spacer(),
+    Text(producto.peso),
+  ],
+),
 
-              Text(
-                producto.descripcion,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
+const SizedBox(height: 4),
 
-              const SizedBox(height: 8),
+Text(
+  producto.descripcion,
+  maxLines: 2,
+  overflow: TextOverflow.ellipsis,
+),
 
-              Text(
-                '\$${producto.precio.toStringAsFixed(2)}',
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                ),
-              ),
+const SizedBox(height: 4),
+
+Text(
+  'Stock disponible: ${producto.stock}',
+  style: const TextStyle(
+    fontSize: 12,
+  ),
+),
+
+const SizedBox(height: 8),
+
+Text(
+  '\$${producto.precio.toStringAsFixed(2)}',
+  style: const TextStyle(
+    fontWeight: FontWeight.bold,
+    fontSize: 18,
+  ),
+),
             ],
           ),
         ),
