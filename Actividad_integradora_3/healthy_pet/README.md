@@ -924,3 +924,804 @@ La siguiente etapa del proyecto corresponderá a la **Actividad Integradora 3**,
 
 Autor: **Alberto Steve Espinoza Espinoza**
 
+---
+
+# Actividad Integradora 3
+## Gestión de estado, Provider, widgets reutilizables y carrito de compras
+
+> **Continuidad del proyecto Healthy Pet**
+>
+> Esta sección corresponde a la tercera fase del desarrollo de la aplicación móvil **Healthy Pet**. La Actividad Integradora 3 continúa directamente sobre la aplicación desarrollada en las Actividades Integradoras 1 y 2, manteniendo su identidad visual, productos, navegación y estructura modular.
+
+---
+
+## 1. Continuidad del proyecto
+
+La **Actividad Integradora 3** representa una nueva etapa de evolución de Healthy Pet.
+
+En esta fase no se creó una aplicación independiente. Se tomó como base la versión desarrollada durante la Actividad Integradora 2 y se incorporaron nuevas funcionalidades relacionadas con:
+
+- Gestión de estado compartido.
+- Uso del paquete `provider`.
+- Implementación de `ChangeNotifier`.
+- Uso de `notifyListeners()`.
+- Uso de `ChangeNotifierProvider`.
+- Uso de `Consumer`.
+- Modelo adicional para los elementos del carrito.
+- Carrito de compras.
+- Actualización dinámica de cantidades y totales.
+- Nuevos widgets reutilizables.
+- Integración entre diferentes pantallas.
+- Mejoras de navegación y experiencia de usuario.
+- Evidencias del desarrollo mediante capturas de pantalla.
+
+La identidad visual y el concepto de Healthy Pet se mantienen.
+
+El eslogan continúa siendo:
+
+**“Amor en cada bocado”**
+
+---
+
+## 2. Objetivo de la Actividad Integradora 3
+
+El objetivo de esta tercera fase fue continuar el desarrollo de Healthy Pet incorporando un mecanismo de gestión de estado compartido mediante **Provider**, permitiendo que los cambios realizados en una pantalla se reflejen automáticamente en otras pantallas de la aplicación.
+
+Además, se buscó fortalecer la organización del proyecto mediante modelos, providers, pantallas y widgets reutilizables.
+
+Los principales objetivos fueron:
+
+- Implementar gestión de estado con `Provider`.
+- Utilizar `ChangeNotifier`.
+- Utilizar `notifyListeners()`.
+- Registrar providers mediante `ChangeNotifierProvider`.
+- Consumir información mediante `Consumer`.
+- Mantener al menos un modelo de datos.
+- Crear widgets personalizados reutilizables.
+- Implementar un carrito de compras.
+- Compartir el estado del carrito entre diferentes pantallas.
+- Mantener la navegación mediante `Navigator.push()` y `Navigator.pop()`.
+- Mantener las cuatro pantallas principales de la aplicación.
+- Documentar el proceso mediante commits y evidencias.
+
+---
+
+## 3. Funcionalidades incorporadas
+
+Durante esta tercera fase se incorporaron las siguientes funcionalidades:
+
+### Gestión de favoritos con Provider
+
+El sistema de favoritos desarrollado anteriormente fue migrado a un provider denominado:
+
+`FavoritosProvider`
+
+Este provider administra el estado de los productos favoritos y permite que diferentes pantallas trabajen con la misma información.
+
+### Carrito de compras
+
+Se incorporó un carrito de compras utilizando:
+
+`CarritoProvider`
+
+El carrito permite:
+
+- Agregar productos.
+- Agregar varias unidades de un producto.
+- Incrementar cantidades.
+- Disminuir cantidades.
+- Eliminar productos.
+- Vaciar el carrito.
+- Calcular subtotales.
+- Calcular el total.
+- Mostrar la cantidad total de productos.
+
+### Integración entre pantallas
+
+El usuario puede seleccionar una cantidad desde el detalle del producto y agregarla al carrito.
+
+Posteriormente, el mismo estado puede consultarse desde la pantalla **Mi carrito**.
+
+El flujo principal es:
+
+```text
+Productos
+    |
+    v
+Detalle del producto
+    |
+    | Agregar al carrito
+    v
+CarritoProvider
+    |
+    | notifyListeners()
+    v
+Mi carrito
+    |
+    +-- Cantidades
+    +-- Subtotales
+    +-- Total
+```
+
+---
+
+## 4. Gestión de estado con Provider
+
+Uno de los principales objetivos de esta actividad fue implementar gestión de estado compartido utilizando el paquete:
+
+`provider`
+
+El proyecto utiliza dos providers principales:
+
+```text
+lib/providers/
+├── favoritos_provider.dart
+└── carrito_provider.dart
+```
+
+### FavoritosProvider
+
+El archivo:
+
+`lib/providers/favoritos_provider.dart`
+
+contiene la clase:
+
+`FavoritosProvider`
+
+que extiende:
+
+```dart
+ChangeNotifier
+```
+
+Entre sus funciones principales se encuentran:
+
+- Consultar productos.
+- Obtener favoritos.
+- Comprobar si un producto es favorito.
+- Cambiar el estado de favorito.
+- Eliminar un favorito.
+
+Cuando se modifica el estado se utiliza:
+
+```dart
+notifyListeners();
+```
+
+Esto permite notificar a los widgets que están observando el provider.
+
+### CarritoProvider
+
+El archivo:
+
+`lib/providers/carrito_provider.dart`
+
+contiene la clase:
+
+`CarritoProvider`
+
+que también extiende:
+
+```dart
+ChangeNotifier
+```
+
+Sus principales responsabilidades son:
+
+- Administrar los elementos del carrito.
+- Agregar productos.
+- Incrementar cantidades.
+- Disminuir cantidades.
+- Eliminar productos.
+- Vaciar el carrito.
+- Calcular la cantidad total.
+- Calcular el valor total.
+
+---
+
+## 5. ChangeNotifierProvider y MultiProvider
+
+Los providers se registran desde `main.dart` utilizando `MultiProvider`.
+
+La estructura conceptual es:
+
+```text
+MultiProvider
+│
+├── FavoritosProvider
+│
+└── CarritoProvider
+```
+
+Esto permite que las diferentes pantallas puedan acceder al estado compartido sin necesidad de pasar manualmente la información entre ellas.
+
+---
+
+## 6. Consumer
+
+La aplicación utiliza `Consumer` para reconstruir las partes de la interfaz que dependen del estado de los providers.
+
+Por ejemplo:
+
+```dart
+Consumer<CarritoProvider>(
+  builder: (context, carrito, child) {
+    return ...
+  },
+)
+```
+
+Cuando el provider ejecuta:
+
+```dart
+notifyListeners();
+```
+
+el `Consumer` recibe el nuevo estado y actualiza la interfaz.
+
+Esto puede observarse especialmente en:
+
+- Indicador de cantidad del carrito.
+- Cantidades de productos.
+- Subtotales.
+- Total de compra.
+- Resumen de compra.
+- Pantalla de favoritos.
+
+---
+
+## 7. Modelo Producto actualizado
+
+Durante esta actividad también se amplió el modelo:
+
+`Producto`
+
+El modelo ahora contiene:
+
+- `nombre`
+- `descripcion`
+- `precio`
+- `imagen`
+- `categoria`
+- `peso`
+- `stock`
+- `favorito`
+
+Esto permite representar información más completa de cada producto.
+
+Los datos iniciales continúan separados en:
+
+`lib/data/productos_data.dart`
+
+Esta separación permite mantener la información de los productos independiente de las pantallas.
+
+---
+
+## 8. Modelo ItemCarrito
+
+Para representar los productos agregados al carrito se creó un nuevo modelo:
+
+`lib/models/item_carrito.dart`
+
+Este modelo contiene:
+
+- Nombre.
+- Imagen.
+- Precio.
+- Cantidad.
+
+Además dispone de un cálculo de subtotal:
+
+```text
+subtotal = precio × cantidad
+```
+
+Por ejemplo:
+
+```text
+Snack Natural
+Precio: $5.99
+Cantidad: 2
+Subtotal: $11.98
+```
+
+---
+
+## 9. Widgets reutilizables
+
+En esta fase se ampliaron los componentes reutilizables del proyecto.
+
+La carpeta:
+
+`lib/widgets/`
+
+contiene actualmente:
+
+```text
+widgets/
+├── producto_card.dart
+├── etiqueta_producto.dart
+├── titulo_seccion.dart
+└── resumen_carrito.dart
+```
+
+### ProductoCard
+
+Archivo:
+
+`lib/widgets/producto_card.dart`
+
+Representa visualmente cada producto del catálogo.
+
+Permite:
+
+- Mostrar la imagen.
+- Mostrar nombre.
+- Mostrar categoría.
+- Mostrar peso.
+- Mostrar descripción.
+- Mostrar stock.
+- Mostrar precio.
+- Acceder al detalle.
+- Gestionar el estado visual de favorito.
+
+### EtiquetaProducto
+
+Archivo:
+
+`lib/widgets/etiqueta_producto.dart`
+
+Es un componente reutilizable utilizado para representar información breve del producto mediante:
+
+- Icono.
+- Texto.
+- Contenedor visual.
+
+Se utiliza, por ejemplo, para mostrar categoría y peso.
+
+### TituloSeccion
+
+Archivo:
+
+`lib/widgets/titulo_seccion.dart`
+
+Permite reutilizar títulos y subtítulos de las diferentes secciones de la aplicación.
+
+### ResumenCarrito
+
+Archivo:
+
+`lib/widgets/resumen_carrito.dart`
+
+Representa el resumen de la compra y recibe información dinámica mediante propiedades como:
+
+- Cantidad.
+- Total.
+- Acción para continuar comprando.
+
+Este widget recibe los valores desde `CarritoProvider`.
+
+---
+
+## 10. Pantalla Mi carrito
+
+Se incorporó la pantalla:
+
+`lib/screens/carrito_screen.dart`
+
+Esta pantalla permite visualizar los productos agregados al carrito.
+
+Cada elemento muestra:
+
+- Imagen.
+- Nombre.
+- Precio unitario.
+- Cantidad.
+- Subtotal.
+- Controles para aumentar y disminuir cantidad.
+- Botón para eliminar.
+
+Además se presenta un resumen con:
+
+- Cantidad total de productos.
+- Total de compra.
+- Acción para continuar comprando.
+
+La pantalla utiliza:
+
+```text
+Consumer<CarritoProvider>
+```
+
+para actualizar automáticamente la interfaz cuando cambia el estado del carrito.
+
+---
+
+## 11. Detalle del producto y carrito
+
+La pantalla:
+
+`lib/screens/detalle_producto_screen.dart`
+
+mantiene el manejo de cantidad mediante `setState()` para la interacción local del detalle y utiliza Provider para compartir el estado del carrito y favoritos.
+
+El usuario puede:
+
+1. Seleccionar una cantidad.
+2. Consultar el subtotal.
+3. Agregar el producto al carrito.
+4. Agregar o quitar el producto de favoritos.
+5. Consultar información adicional.
+6. Abrir el carrito.
+
+El proceso de agregar al carrito utiliza:
+
+```dart
+carrito.agregarProducto(
+  widget.producto,
+  cantidad: cantidad,
+);
+```
+
+Posteriormente el provider ejecuta:
+
+```dart
+notifyListeners();
+```
+
+y las pantallas que utilizan `Consumer<CarritoProvider>` reciben el nuevo estado.
+
+---
+
+## 12. Navegación de la aplicación
+
+La aplicación mantiene las cuatro pantallas principales desarrolladas en la Actividad Integradora 2:
+
+```text
+Inicio
+Productos
+Favoritos
+Nosotros
+```
+
+Además se incorporaron:
+
+```text
+Detalle del producto
+Mi carrito
+```
+
+El flujo ampliado es:
+
+```text
+Inicio
+  |
+  +-- Productos
+  |      |
+  |      +-- Detalle del producto
+  |              |
+  |              +-- Mi carrito
+  |
+  +-- Favoritos
+  |
+  +-- Nosotros
+```
+
+Se mantienen las acciones:
+
+```dart
+Navigator.push()
+```
+
+para avanzar hacia nuevas pantallas y:
+
+```dart
+Navigator.pop()
+```
+
+para regresar a la pantalla anterior.
+
+---
+
+## 13. Estructura actual del proyecto
+
+La organización del proyecto se amplió para incorporar providers, nuevos modelos y widgets.
+
+```text
+healthy_pet/
+├── android/
+├── assets/
+│   └── images/
+│       ├── logo_healthy_pet.png
+│       ├── snack_natural.png
+│       ├── galletas.png
+│       ├── premios.png
+│       └── mix_saludable.png
+├── capturas/
+├── capturas2/
+├── capturas3/
+├── lib/
+│   ├── data/
+│   │   └── productos_data.dart
+│   ├── models/
+│   │   ├── producto.dart
+│   │   └── item_carrito.dart
+│   ├── providers/
+│   │   ├── favoritos_provider.dart
+│   │   └── carrito_provider.dart
+│   ├── screens/
+│   │   ├── inicio_screen.dart
+│   │   ├── productos_screen.dart
+│   │   ├── favoritos_screen.dart
+│   │   ├── nosotros_screen.dart
+│   │   ├── detalle_producto_screen.dart
+│   │   ├── carrito_screen.dart
+│   │   └── principal_screen.dart
+│   ├── theme/
+│   │   └── tema_app.dart
+│   ├── widgets/
+│   │   ├── producto_card.dart
+│   │   ├── etiqueta_producto.dart
+│   │   ├── titulo_seccion.dart
+│   │   └── resumen_carrito.dart
+│   └── main.dart
+├── pubspec.yaml
+├── pubspec.lock
+└── README.md
+```
+
+### Responsabilidad de las carpetas
+
+- `models`: modelos de datos.
+- `data`: datos iniciales de los productos.
+- `providers`: gestión del estado compartido.
+- `screens`: pantallas de la aplicación.
+- `widgets`: componentes reutilizables.
+- `theme`: configuración visual.
+- `assets`: imágenes y recursos.
+- `capturas3`: evidencias de la Actividad Integradora 3.
+
+---
+
+## 14. Tecnologías y paquetes utilizados
+
+La Actividad Integradora 3 mantiene las tecnologías utilizadas anteriormente e incorpora:
+
+### Tecnologías
+
+- Flutter.
+- Dart.
+- Visual Studio Code.
+- Android Studio.
+- Android Emulator.
+- GitHub.
+
+### Paquetes
+
+- `google_fonts`
+- `provider`
+
+El paquete `provider` permite implementar la gestión de estado compartido utilizada en favoritos y carrito.
+
+---
+
+## 15. Evidencias de la Actividad Integradora 3
+
+Las evidencias de esta tercera fase se encuentran organizadas en:
+
+`capturas3/`
+
+### 1. Instalación de Provider
+
+![Instalación de Provider](capturas3/01_Instalacion_Provider.png)
+
+### 2. Favorito utilizando Provider
+
+![Favorito con Provider](capturas3/02_favorito_provider.png)
+
+### 3. Favoritos compartidos
+
+![Favoritos compartidos](capturas3/03_favoritos_provider.png)
+
+### 4. Modelo y catálogo
+
+![Modelo y catálogo](capturas3/04_modelo_catalogo.png)
+
+### 5. Widgets reutilizables
+
+![Widgets reutilizables](capturas3/05_widgets_reutilizables.png)
+
+### 6. Carrito vacío
+
+![Carrito vacío](capturas3/06_carrito_vacio.png)
+
+### 7. Agregar producto al carrito
+
+![Agregar al carrito](capturas3/07_agregar_al_carrito.png)
+
+### 8. Carrito con producto
+
+![Carrito con producto](capturas3/08_carrito_con_producto.png)
+
+### 9. Resumen del carrito
+
+![Resumen del carrito](capturas3/09_resumen_carrito.png)
+
+### 10. Actualización de cantidades
+
+![Cantidades del carrito](capturas3/10_carrito_cantidades.png)
+
+### 11. Navegación final
+
+![Navegación final](capturas3/11_navegacion_final.png)
+
+---
+
+## 16. Demostración del estado compartido
+
+Uno de los puntos principales de esta actividad es demostrar que una modificación realizada en una pantalla puede reflejarse en otra pantalla.
+
+Por ejemplo:
+
+```text
+Detalle del producto
+        |
+        | seleccionar cantidad
+        |
+        v
+agregarProducto()
+        |
+        v
+CarritoProvider
+        |
+        | notifyListeners()
+        v
+Consumer<CarritoProvider>
+        |
+        v
+Mi carrito
+        |
+        +-- cantidad actualizada
+        +-- subtotal actualizado
+        +-- total actualizado
+```
+
+De esta manera, el carrito utiliza un estado compartido mediante Provider.
+
+---
+
+## 17. Historial de desarrollo de la Actividad Integradora 3
+
+La tercera fase se desarrolló progresivamente mediante **7 commits significativos**, manteniendo la evolución de la misma aplicación.
+
+### Commit 1
+**Implementar estado compartido de favoritos con Provider**
+
+Se instaló y configuró `provider` y se migró la gestión de favoritos a `FavoritosProvider`.
+
+### Commit 2
+**Mejorar modelo y catálogo de productos**
+
+Se amplió el modelo `Producto` incorporando categoría, peso y stock, y se actualizó la presentación del catálogo.
+
+### Commit 3
+**Crear widgets reutilizables para el catálogo**
+
+Se incorporaron `EtiquetaProducto` y `TituloSeccion`, además de mejorar `ProductoCard`.
+
+### Commit 4
+**Implementar carrito de compras con Provider**
+
+Se incorporaron `ItemCarrito`, `CarritoProvider` y `CarritoScreen`.
+
+### Commit 5
+**Integrar carrito con productos y detalle**
+
+Se conectó el detalle del producto con `CarritoProvider`, permitiendo seleccionar una cantidad y agregarla al carrito.
+
+### Commit 6
+**Mejorar UI, navegación y evidencias**
+
+Se incorporó `ResumenCarrito`, se mejoró la presentación del carrito, la navegación y las evidencias de funcionamiento.
+
+### Commit 7
+**Actualizar documentación y finalizar Actividad Integradora 3**
+
+Corresponde al cierre documental de la tercera fase, incluyendo README, evidencias y descripción de las funcionalidades desarrolladas.
+
+---
+
+## 18. Ejecución del proyecto
+
+Para obtener las dependencias:
+
+```bash
+flutter pub get
+```
+
+Para comprobar los dispositivos disponibles:
+
+```bash
+flutter devices
+```
+
+Para analizar el proyecto:
+
+```bash
+flutter analyze
+```
+
+Para ejecutar la aplicación:
+
+```bash
+flutter run
+```
+
+También puede ejecutarse directamente sobre el emulador Android utilizado durante el desarrollo:
+
+```bash
+flutter run -d emulator-5554
+```
+
+---
+
+## 19. Resultado de la Actividad Integradora 3
+
+Al finalizar esta tercera fase, Healthy Pet cuenta con una estructura más modular y con gestión de estado compartido.
+
+Las principales mejoras incorporadas son:
+
+- Gestión de favoritos mediante Provider.
+- Gestión del carrito mediante Provider.
+- Uso de `ChangeNotifier`.
+- Uso de `notifyListeners()`.
+- Uso de `ChangeNotifierProvider`.
+- Uso de `MultiProvider`.
+- Uso de `Consumer`.
+- Modelo `Producto` ampliado.
+- Nuevo modelo `ItemCarrito`.
+- Carrito de compras funcional.
+- Control de cantidades.
+- Cálculo de subtotales.
+- Cálculo del total.
+- Eliminación de productos.
+- Vaciar carrito.
+- Resumen visual del carrito.
+- Nuevos widgets reutilizables.
+- Navegación entre productos, detalle y carrito.
+- Integración de estado entre diferentes pantallas.
+- Evidencias organizadas en `capturas3`.
+- Desarrollo documentado mediante 7 commits significativos.
+
+---
+
+## 20. Continuidad del proyecto
+
+La Actividad Integradora 3 mantiene la evolución progresiva de Healthy Pet:
+
+```text
+Actividad Integradora 1
+        ↓
+Identidad visual y aplicación inicial
+        ↓
+Actividad Integradora 2
+        ↓
+Navegación, catálogo, favoritos y detalle
+        ↓
+Actividad Integradora 3
+        ↓
+Provider, estado compartido y carrito
+```
+
+La aplicación queda preparada para continuar evolucionando en futuras actividades académicas mediante nuevas funcionalidades relacionadas con productos, pedidos, usuarios y procesos de compra.
+
+---
+
+## Healthy Pet 🐾
+
+**Amor en cada bocado**
+
+**Actividad Integradora 3 — Desarrollo de Aplicaciones Móviles**
+
+Autor: **Alberto Steve Espinoza Espinoza**
