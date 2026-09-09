@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../models/producto.dart';
+import '../providers/carrito_provider.dart';
 import '../providers/favoritos_provider.dart';
+import 'carrito_screen.dart';
 
 class DetalleProductoScreen extends StatefulWidget {
   final Producto producto;
@@ -17,13 +19,24 @@ class DetalleProductoScreen extends StatefulWidget {
       _DetalleProductoScreenState();
 }
 
-class _DetalleProductoScreenState extends State<DetalleProductoScreen> {
+class _DetalleProductoScreenState
+    extends State<DetalleProductoScreen> {
   int cantidad = 1;
 
   void aumentarCantidad() {
-    setState(() {
-      cantidad++;
-    });
+    if (cantidad < widget.producto.stock) {
+      setState(() {
+        cantidad++;
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'No puedes superar el stock disponible.',
+          ),
+        ),
+      );
+    }
   }
 
   void disminuirCantidad() {
@@ -44,14 +57,19 @@ class _DetalleProductoScreenState extends State<DetalleProductoScreen> {
               const Icon(Icons.pets),
               const SizedBox(width: 10),
               Expanded(
-                child: Text(widget.producto.nombre),
+                child: Text(
+                  widget.producto.nombre,
+                ),
               ),
             ],
           ),
-          content: const Text(
+          content: Text(
             'Este producto forma parte de la selección '
             'Healthy Pet. Está pensado como una alternativa '
-            'deliciosa para consentir a tu mascota.',
+            'deliciosa para consentir a tu mascota.\n\n'
+            'Categoría: ${widget.producto.categoria}\n'
+            'Peso: ${widget.producto.peso}\n'
+            'Stock disponible: ${widget.producto.stock}',
           ),
           actions: [
             TextButton(
@@ -66,35 +84,118 @@ class _DetalleProductoScreenState extends State<DetalleProductoScreen> {
     );
   }
 
- void agregarAFavoritos() {
-  final proveedor = context.read<FavoritosProvider>();
+  void agregarAFavoritos() {
+    final proveedor = context.read<FavoritosProvider>();
 
-  proveedor.cambiarFavorito(widget.producto);
+    proveedor.cambiarFavorito(widget.producto);
 
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: Text(
-        proveedor.esFavorito(widget.producto)
-            ? '${widget.producto.nombre} agregado a favoritos'
-            : '${widget.producto.nombre} eliminado de favoritos',
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          proveedor.esFavorito(widget.producto)
+              ? '${widget.producto.nombre} agregado a favoritos'
+              : '${widget.producto.nombre} eliminado de favoritos',
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
+
+  void agregarAlCarrito() {
+    final carrito = context.read<CarritoProvider>();
+
+    carrito.agregarProducto(
+      widget.producto,
+      cantidad: cantidad,
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          '$cantidad x ${widget.producto.nombre} agregado al carrito',
+        ),
+        action: SnackBarAction(
+          label: 'VER',
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const CarritoScreen(),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    final double subtotal = widget.producto.precio * cantidad;
+    final double subtotal =
+        widget.producto.precio * cantidad;
+
+    final bool esFavorito =
+        context.watch<FavoritosProvider>().esFavorito(
+              widget.producto,
+            );
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Detalle del producto'),
+        actions: [
+          Consumer<CarritoProvider>(
+            builder: (context, carrito, child) {
+              return Stack(
+                alignment: Alignment.center,
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              const CarritoScreen(),
+                        ),
+                      );
+                    },
+                    icon: const Icon(
+                      Icons.shopping_cart_outlined,
+                    ),
+                    tooltip: 'Mi carrito',
+                  ),
+                  if (carrito.cantidadTotal > 0)
+                    Positioned(
+                      right: 5,
+                      top: 5,
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .error,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Text(
+                          '${carrito.cantidadTotal}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              );
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(20),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment:
+                CrossAxisAlignment.start,
             children: [
               Center(
                 child: Image.asset(
@@ -121,6 +222,41 @@ class _DetalleProductoScreenState extends State<DetalleProductoScreen> {
                 style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
+                ),
+              ),
+
+              const SizedBox(height: 8),
+
+              Row(
+                children: [
+                  Chip(
+                    avatar: const Icon(
+                      Icons.category_outlined,
+                      size: 18,
+                    ),
+                    label: Text(
+                      widget.producto.categoria,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Chip(
+                    avatar: const Icon(
+                      Icons.scale_outlined,
+                      size: 18,
+                    ),
+                    label: Text(
+                      widget.producto.peso,
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 8),
+
+              Text(
+                'Stock disponible: ${widget.producto.stock}',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w500,
                 ),
               ),
 
@@ -161,13 +297,17 @@ class _DetalleProductoScreenState extends State<DetalleProductoScreen> {
                   Container(
                     decoration: BoxDecoration(
                       border: Border.all(
-                        color: Theme.of(context).colorScheme.primary,
+                        color: Theme.of(context)
+                            .colorScheme
+                            .primary,
                       ),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius:
+                          BorderRadius.circular(12),
                     ),
                     child: IconButton(
                       onPressed: disminuirCantidad,
                       icon: const Icon(Icons.remove),
+                      tooltip: 'Disminuir cantidad',
                     ),
                   ),
 
@@ -186,13 +326,17 @@ class _DetalleProductoScreenState extends State<DetalleProductoScreen> {
                   Container(
                     decoration: BoxDecoration(
                       border: Border.all(
-                        color: Theme.of(context).colorScheme.primary,
+                        color: Theme.of(context)
+                            .colorScheme
+                            .primary,
                       ),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius:
+                          BorderRadius.circular(12),
                     ),
                     child: IconButton(
                       onPressed: aumentarCantidad,
                       icon: const Icon(Icons.add),
+                      tooltip: 'Aumentar cantidad',
                     ),
                   ),
                 ],
@@ -204,13 +348,17 @@ class _DetalleProductoScreenState extends State<DetalleProductoScreen> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius:
+                      BorderRadius.circular(12),
                   border: Border.all(
-                    color: Theme.of(context).colorScheme.primary,
+                    color: Theme.of(context)
+                        .colorScheme
+                        .primary,
                   ),
                 ),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment:
+                      MainAxisAlignment.spaceBetween,
                   children: [
                     const Text(
                       'Subtotal:',
@@ -235,18 +383,29 @@ class _DetalleProductoScreenState extends State<DetalleProductoScreen> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
+                  onPressed: agregarAlCarrito,
+                  icon: const Icon(
+                    Icons.add_shopping_cart,
+                  ),
+                  label: const Text(
+                    'Agregar al carrito',
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 12),
+
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
                   onPressed: agregarAFavoritos,
                   icon: Icon(
-                    context.watch<FavoritosProvider>().esFavorito(
-                          widget.producto,
-                        )
+                    esFavorito
                         ? Icons.favorite
                         : Icons.favorite_border,
                   ),
                   label: Text(
-                    context.watch<FavoritosProvider>().esFavorito(
-                          widget.producto,
-                        )
+                    esFavorito
                         ? 'Quitar de favoritos'
                         : 'Agregar a favoritos',
                   ),
@@ -259,9 +418,44 @@ class _DetalleProductoScreenState extends State<DetalleProductoScreen> {
                 width: double.infinity,
                 child: OutlinedButton.icon(
                   onPressed: mostrarInformacion,
-                  icon: const Icon(Icons.info_outline),
-                  label: const Text('Ver información'),
+                  icon: const Icon(
+                    Icons.info_outline,
+                  ),
+                  label: const Text(
+                    'Ver información',
+                  ),
                 ),
+              ),
+
+              const SizedBox(height: 12),
+
+              Consumer<CarritoProvider>(
+                builder: (context, carrito, child) {
+                  if (carrito.cantidadTotal == 0) {
+                    return const SizedBox.shrink();
+                  }
+
+                  return SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                const CarritoScreen(),
+                          ),
+                        );
+                      },
+                      icon: const Icon(
+                        Icons.shopping_cart,
+                      ),
+                      label: Text(
+                        'Ver carrito (${carrito.cantidadTotal})',
+                      ),
+                    ),
+                  );
+                },
               ),
             ],
           ),

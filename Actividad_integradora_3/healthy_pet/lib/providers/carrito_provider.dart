@@ -36,19 +36,27 @@ class CarritoProvider extends ChangeNotifier {
     );
   }
 
-  void agregarProducto(Producto producto) {
+  void agregarProducto(
+    Producto producto, {
+    int cantidad = 1,
+  }) {
+    if (cantidad < 1) {
+      return;
+    }
+
     final indice = _items.indexWhere(
       (item) => item.nombre == producto.nombre,
     );
 
     if (indice >= 0) {
-      _items[indice].cantidad++;
+      _items[indice].cantidad += cantidad;
     } else {
       _items.add(
         ItemCarrito(
           nombre: producto.nombre,
           imagen: producto.imagen,
           precio: producto.precio,
+          cantidad: cantidad,
         ),
       );
     }
