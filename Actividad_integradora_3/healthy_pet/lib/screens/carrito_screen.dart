@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/carrito_provider.dart';
+import '../widgets/resumen_carrito.dart';
 
 class CarritoScreen extends StatelessWidget {
   const CarritoScreen({super.key});
@@ -24,23 +25,29 @@ class CarritoScreen extends StatelessWidget {
                     context: context,
                     builder: (context) {
                       return AlertDialog(
-                        title: const Text('Vaciar carrito'),
+                        title: const Text(
+                          'Vaciar carrito',
+                        ),
                         content: const Text(
-                          '¿Deseas eliminar todos los productos del carrito?',
+                          '¿Deseas eliminar todos los productos '
+                          'del carrito?',
                         ),
                         actions: [
                           TextButton(
                             onPressed: () {
                               Navigator.pop(context);
                             },
-                            child: const Text('Cancelar'),
+                            child: const Text(
+                              'Cancelar',
+                            ),
                           ),
                           ElevatedButton(
                             onPressed: () {
                               carrito.vaciarCarrito();
                               Navigator.pop(context);
 
-                              ScaffoldMessenger.of(context).showSnackBar(
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(
                                 const SnackBar(
                                   content: Text(
                                     'Carrito vaciado correctamente',
@@ -48,14 +55,18 @@ class CarritoScreen extends StatelessWidget {
                                 ),
                               );
                             },
-                            child: const Text('Vaciar'),
+                            child: const Text(
+                              'Vaciar',
+                            ),
                           ),
                         ],
                       );
                     },
                   );
                 },
-                icon: const Icon(Icons.delete_sweep_outlined),
+                icon: const Icon(
+                  Icons.delete_sweep_outlined,
+                ),
                 tooltip: 'Vaciar carrito',
               );
             },
@@ -66,27 +77,31 @@ class CarritoScreen extends StatelessWidget {
         builder: (context, carrito, child) {
           if (carrito.items.isEmpty) {
             return const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.shopping_cart_outlined,
-                    size: 80,
-                  ),
-                  SizedBox(height: 20),
-                  Text(
-                    'Tu carrito está vacío',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+              child: Padding(
+                padding: EdgeInsets.all(24),
+                child: Column(
+                  mainAxisAlignment:
+                      MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.shopping_cart_outlined,
+                      size: 80,
                     ),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    'Agrega productos desde nuestro catálogo.',
-                    textAlign: TextAlign.center,
-                  ),
-                ],
+                    SizedBox(height: 20),
+                    Text(
+                      'Tu carrito está vacío',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      'Agrega productos desde nuestro catálogo.',
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
               ),
             );
           }
@@ -123,48 +138,72 @@ class CarritoScreen extends StatelessWidget {
                                   Text(
                                     item.nombre,
                                     maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
+                                    overflow:
+                                        TextOverflow.ellipsis,
                                     style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
+                                      fontWeight:
+                                          FontWeight.bold,
                                       fontSize: 16,
                                     ),
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
-                                    '\$${item.precio.toStringAsFixed(2)}',
+                                    '\$${item.precio.toStringAsFixed(2)} '
+                                    'por unidad',
                                   ),
                                   const SizedBox(height: 8),
                                   Row(
                                     children: [
                                       IconButton(
                                         onPressed: () {
-                                          carrito.disminuirCantidad(item);
+                                          carrito
+                                              .disminuirCantidad(
+                                            item,
+                                          );
                                         },
                                         icon: const Icon(
-                                          Icons.remove_circle_outline,
+                                          Icons
+                                              .remove_circle_outline,
                                         ),
-                                        tooltip: 'Disminuir',
+                                        tooltip:
+                                            'Disminuir',
                                       ),
-                                      Text(
-                                        '${item.cantidad}',
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
+                                      Container(
+                                        constraints:
+                                            const BoxConstraints(
+                                          minWidth: 32,
+                                        ),
+                                        alignment:
+                                            Alignment.center,
+                                        child: Text(
+                                          '${item.cantidad}',
+                                          style:
+                                              const TextStyle(
+                                            fontWeight:
+                                                FontWeight.bold,
+                                          ),
                                         ),
                                       ),
                                       IconButton(
                                         onPressed: () {
-                                          carrito.incrementarCantidad(item);
+                                          carrito
+                                              .incrementarCantidad(
+                                            item,
+                                          );
                                         },
                                         icon: const Icon(
-                                          Icons.add_circle_outline,
+                                          Icons
+                                              .add_circle_outline,
                                         ),
-                                        tooltip: 'Aumentar',
+                                        tooltip:
+                                            'Aumentar',
                                       ),
                                     ],
                                   ),
                                 ],
                               ),
                             ),
+                            const SizedBox(width: 4),
                             Column(
                               crossAxisAlignment:
                                   CrossAxisAlignment.end,
@@ -172,19 +211,23 @@ class CarritoScreen extends StatelessWidget {
                                 Text(
                                   '\$${item.subtotal.toStringAsFixed(2)}',
                                   style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
+                                    fontWeight:
+                                        FontWeight.bold,
                                     fontSize: 16,
                                   ),
                                 ),
                                 IconButton(
                                   onPressed: () {
-                                    carrito.eliminarProducto(item);
+                                    carrito
+                                        .eliminarProducto(item);
 
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(
+                                    ScaffoldMessenger.of(
+                                      context,
+                                    ).showSnackBar(
                                       SnackBar(
                                         content: Text(
-                                          '${item.nombre} eliminado del carrito',
+                                          '${item.nombre} '
+                                          'eliminado del carrito',
                                         ),
                                       ),
                                     );
@@ -203,55 +246,19 @@ class CarritoScreen extends StatelessWidget {
                   },
                 ),
               ),
-
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Theme.of(context)
-                      .colorScheme
-                      .surfaceContainerHighest,
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  12,
+                  0,
+                  12,
+                  12,
                 ),
-                child: SafeArea(
-                  child: Row(
-                    mainAxisAlignment:
-                        MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Total',
-                            style: TextStyle(
-                              fontSize: 14,
-                            ),
-                          ),
-                          Text(
-                            '\$${carrito.total.toStringAsFixed(2)}',
-                            style: const TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                      ElevatedButton.icon(
-                        onPressed: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                'Funcionalidad de compra próximamente',
-                              ),
-                            ),
-                          );
-                        },
-                        icon: const Icon(
-                          Icons.shopping_cart_checkout,
-                        ),
-                        label: const Text('Continuar'),
-                      ),
-                    ],
-                  ),
+                child: ResumenCarrito(
+                  cantidad: carrito.cantidadTotal,
+                  total: carrito.total,
+                  alContinuarComprando: () {
+                    Navigator.pop(context);
+                  },
                 ),
               ),
             ],

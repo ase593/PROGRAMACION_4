@@ -34,6 +34,7 @@ class _DetalleProductoScreenState
           content: Text(
             'No puedes superar el stock disponible.',
           ),
+          duration: Duration(seconds: 2),
         ),
       );
     }
@@ -89,6 +90,10 @@ class _DetalleProductoScreenState
 
     proveedor.cambiarFavorito(widget.producto);
 
+    if (!mounted) {
+      return;
+    }
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
@@ -96,6 +101,7 @@ class _DetalleProductoScreenState
               ? '${widget.producto.nombre} agregado a favoritos'
               : '${widget.producto.nombre} eliminado de favoritos',
         ),
+        duration: const Duration(seconds: 2),
       ),
     );
   }
@@ -108,22 +114,47 @@ class _DetalleProductoScreenState
       cantidad: cantidad,
     );
 
-    ScaffoldMessenger.of(context).showSnackBar(
+    if (!mounted) {
+      return;
+    }
+
+    final navigator = Navigator.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+
+    messenger.hideCurrentSnackBar();
+
+    messenger.showSnackBar(
       SnackBar(
         content: Text(
           '$cantidad x ${widget.producto.nombre} agregado al carrito',
         ),
+        duration: const Duration(seconds: 3),
         action: SnackBarAction(
           label: 'VER',
           onPressed: () {
-            Navigator.push(
-              context,
+            messenger.hideCurrentSnackBar();
+
+            navigator.push(
               MaterialPageRoute(
-                builder: (context) => const CarritoScreen(),
+                builder: (_) => const CarritoScreen(),
               ),
             );
           },
         ),
+      ),
+    );
+  }
+
+  void abrirCarrito() {
+    if (!mounted) {
+      return;
+    }
+
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => const CarritoScreen(),
       ),
     );
   }
@@ -148,15 +179,7 @@ class _DetalleProductoScreenState
                 alignment: Alignment.center,
                 children: [
                   IconButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              const CarritoScreen(),
-                        ),
-                      );
-                    },
+                    onPressed: abrirCarrito,
                     icon: const Icon(
                       Icons.shopping_cart_outlined,
                     ),
@@ -227,7 +250,9 @@ class _DetalleProductoScreenState
 
               const SizedBox(height: 8),
 
-              Row(
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
                 children: [
                   Chip(
                     avatar: const Icon(
@@ -238,7 +263,6 @@ class _DetalleProductoScreenState
                       widget.producto.categoria,
                     ),
                   ),
-                  const SizedBox(width: 8),
                   Chip(
                     avatar: const Icon(
                       Icons.scale_outlined,
@@ -438,15 +462,7 @@ class _DetalleProductoScreenState
                   return SizedBox(
                     width: double.infinity,
                     child: OutlinedButton.icon(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                const CarritoScreen(),
-                          ),
-                        );
-                      },
+                      onPressed: abrirCarrito,
                       icon: const Icon(
                         Icons.shopping_cart,
                       ),
