@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/producto.dart';
 import '../screens/detalle_producto_screen.dart';
+import 'etiqueta_producto.dart';
 
 class ProductoCard extends StatelessWidget {
   final Producto producto;
@@ -59,57 +60,60 @@ class ProductoCard extends StatelessWidget {
               ),
 
               const SizedBox(height: 8),
-Text(
-  producto.nombre,
-  maxLines: 1,
-  overflow: TextOverflow.ellipsis,
-  style: const TextStyle(
-    fontWeight: FontWeight.bold,
-    fontSize: 16,
-  ),
-),
 
-const SizedBox(height: 4),
+              Text(
+                producto.nombre,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
 
-Row(
-  children: [
-    const Icon(
-      Icons.category_outlined,
-      size: 16,
-    ),
-    const SizedBox(width: 4),
-    Text(producto.categoria),
-    const Spacer(),
-    Text(producto.peso),
-  ],
-),
+              const SizedBox(height: 6),
 
-const SizedBox(height: 4),
+              Wrap(
+                spacing: 4,
+                runSpacing: 4,
+                children: [
+                  EtiquetaProducto(
+                    texto: producto.categoria,
+                    icono: Icons.category_outlined,
+                  ),
+                  EtiquetaProducto(
+                    texto: producto.peso,
+                    icono: Icons.scale_outlined,
+                  ),
+                ],
+              ),
 
-Text(
-  producto.descripcion,
-  maxLines: 2,
-  overflow: TextOverflow.ellipsis,
-),
+              const SizedBox(height: 6),
 
-const SizedBox(height: 4),
+              Text(
+                producto.descripcion,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
 
-Text(
-  'Stock disponible: ${producto.stock}',
-  style: const TextStyle(
-    fontSize: 12,
-  ),
-),
+              const SizedBox(height: 4),
 
-const SizedBox(height: 8),
+              Text(
+                'Stock disponible: ${producto.stock}',
+                style: const TextStyle(
+                  fontSize: 12,
+                ),
+              ),
 
-Text(
-  '\$${producto.precio.toStringAsFixed(2)}',
-  style: const TextStyle(
-    fontWeight: FontWeight.bold,
-    fontSize: 18,
-  ),
-),
+              const SizedBox(height: 8),
+
+              Text(
+                '\$${producto.precio.toStringAsFixed(2)}',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
+              ),
             ],
           ),
         ),
